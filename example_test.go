@@ -1,4 +1,4 @@
-package main
+package uitable_test
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ var hackers = []hacker{
 	{"Alan Turing", "June 23, 1912", "Alan was a British pioneering computer scientist, mathematician, logician, cryptanalyst and theoretical biologist"},
 }
 
-func main() {
+func Example() {
 	table := uitable.New()
 	table.MaxColWidth = 50
 
