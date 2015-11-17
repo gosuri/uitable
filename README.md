@@ -61,3 +61,7 @@ Bio:      Alan was a British pioneering computer scientist, mathematician, logic
 ```
 $ go get -v github.com/gosuri/uitable
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/gosuri/uitable/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
