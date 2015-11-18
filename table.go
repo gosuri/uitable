@@ -7,6 +7,7 @@ import (
 
 	"github.com/gosuri/uitable/util/strutil"
 	"github.com/gosuri/uitable/util/wordwrap"
+	"github.com/mattn/go-runewidth"
 )
 
 var (
@@ -153,8 +154,9 @@ type Cell struct {
 func (c *Cell) LineWidth() uint {
 	width := 0
 	for _, s := range strings.Split(c.String(), "\n") {
-		if len(s) > width {
-			width = len(s)
+		w := runewidth.StringWidth(s)
+		if w > width {
+			width = w
 		}
 	}
 	return uint(width)
