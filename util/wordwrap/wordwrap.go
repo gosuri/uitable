@@ -33,6 +33,7 @@ func WrapString(s string, lim uint) string {
 					spaceWidth += runewidth.StringWidth(buf.String())
 				}
 				spaceBuf.Reset()
+				spaceWidth = 0
 			} else {
 				current += uint(spaceWidth + wordWidth)
 				spaceBuf.WriteTo(buf)
