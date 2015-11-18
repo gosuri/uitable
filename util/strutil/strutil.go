@@ -44,10 +44,16 @@ func Resize(s string, length uint) string {
 	// Pads only when length of the string smaller than len needed
 	s = PadRight(s, n, ' ')
 	if slen > n {
-		b := []byte(s)
+		rs := []rune(s)
 		var buf bytes.Buffer
-		for i := 0; i < n-3; i++ {
-			buf.WriteByte(b[i])
+		w := 0
+		for _, r := range rs {
+			buf.WriteRune(r)
+			rw := runewidth.RuneWidth(r)
+			if w+rw >= n-3 {
+				break
+			}
+			w += rw
 		}
 		buf.WriteString("...")
 		s = buf.String()
