@@ -3,6 +3,7 @@ package wordwrap
 
 import (
 	"bytes"
+	"github.com/mattn/go-runewidth"
 	"unicode"
 )
 
@@ -19,50 +20,58 @@ func WrapString(s string, lim uint) string {
 
 	var current uint
 	var wordBuf, spaceBuf bytes.Buffer
+	var wordWidth, spaceWidth int
 
 	for _, char := range s {
 		if char == '\n' {
 			if wordBuf.Len() == 0 {
-				if current+uint(spaceBuf.Len()) > lim {
+				if current+uint(spaceWidth) > lim {
 					current = 0
 				} else {
-					current += uint(spaceBuf.Len())
+					current += uint(spaceWidth)
 					spaceBuf.WriteTo(buf)
+					spaceWidth += runewidth.StringWidth(buf.String())
 				}
 				spaceBuf.Reset()
 			} else {
-				current += uint(spaceBuf.Len() + wordBuf.Len())
+				current += uint(spaceWidth + wordWidth)
 				spaceBuf.WriteTo(buf)
 				spaceBuf.Reset()
 				wordBuf.WriteTo(buf)
 				wordBuf.Reset()
+				spaceWidth = 0
+				wordWidth = 0
 			}
 			buf.WriteRune(char)
 			current = 0
 		} else if unicode.IsSpace(char) {
 			if spaceBuf.Len() == 0 || wordBuf.Len() > 0 {
-				current += uint(spaceBuf.Len() + wordBuf.Len())
+				current += uint(spaceWidth + wordWidth)
 				spaceBuf.WriteTo(buf)
 				spaceBuf.Reset()
 				wordBuf.WriteTo(buf)
 				wordBuf.Reset()
+				spaceWidth = 0
+				wordWidth = 0
 			}
 
 			spaceBuf.WriteRune(char)
+			spaceWidth += runewidth.RuneWidth(char)
 		} else {
-
 			wordBuf.WriteRune(char)
+			wordWidth += runewidth.RuneWidth(char)
 
-			if current+uint(spaceBuf.Len()+wordBuf.Len()) > lim && uint(wordBuf.Len()) < lim {
+			if current+uint(spaceWidth+wordWidth) > lim && uint(wordWidth) < lim {
 				buf.WriteRune('\n')
 				current = 0
 				spaceBuf.Reset()
+				spaceWidth = 0
 			}
 		}
 	}
 
 	if wordBuf.Len() == 0 {
-		if current+uint(spaceBuf.Len()) <= lim {
+		if current+uint(spaceWidth) <= lim {
 			spaceBuf.WriteTo(buf)
 		}
 	} else {
