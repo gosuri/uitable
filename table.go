@@ -20,7 +20,7 @@ type Table struct {
 	// Rows is the collection of rows in the table
 	Rows []*Row
 
-	// MaxColWidth is the maximum allowed with for cells in the table
+	// MaxColWidth is the maximum allowed width for cells in the table
 	MaxColWidth uint
 
 	// Wrap when set to true wraps the contents of the columns when the length exceeds the MaxColWidth
