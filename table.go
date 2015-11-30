@@ -10,10 +10,8 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-var (
-	// Seperator is the default column seperator
-	Separator = "\t"
-)
+// Separator is the default column seperator
+var Separator = "\t"
 
 // Table represents a decorator that renders the data in formatted in a table
 type Table struct {
@@ -51,7 +49,7 @@ func (t *Table) String() string {
 	}
 
 	// determine the width for each column (cell in a row)
-	colwidths := make([]uint, 0)
+	var colwidths []uint
 	for _, row := range t.Rows {
 		for i, cell := range row.Cells {
 			// resize colwidth array
@@ -69,7 +67,7 @@ func (t *Table) String() string {
 		}
 	}
 
-	lines := make([]string, 0)
+	var lines []string
 	for _, row := range t.Rows {
 		row.Separator = t.Separator
 		for i, cell := range row.Cells {

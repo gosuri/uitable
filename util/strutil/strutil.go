@@ -6,7 +6,7 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-// Returns a new string of a specified length in which the end of the current string is padded with spaces or with a specified Unicode character.
+// PadRight returns a new string of a specified length in which the end of the current string is padded with spaces or with a specified Unicode character.
 func PadRight(str string, length int, pad byte) string {
 	slen := runewidth.StringWidth(str)
 	if slen >= length {
@@ -19,7 +19,7 @@ func PadRight(str string, length int, pad byte) string {
 	return buf.String()
 }
 
-// Returns a new string of a specified length in which the beginning of the current string is padded with spaces or with a specified Unicode character.
+// PadLeft returns a new string of a specified length in which the beginning of the current string is padded with spaces or with a specified Unicode character.
 func PadLeft(str string, length int, pad byte) string {
 	slen := runewidth.StringWidth(str)
 	if slen >= length {
