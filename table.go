@@ -4,6 +4,7 @@ package uitable
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/gosuri/uitable/util/strutil"
 	"github.com/gosuri/uitable/util/wordwrap"
@@ -26,17 +27,22 @@ type Table struct {
 
 	// Separator is the seperator for columns in the table. Default is "\t"
 	Separator string
+
+	mtx *sync.RWMutex
 }
 
 // New returns a new Table with default values
 func New() *Table {
 	return &Table{
 		Separator: Separator,
+		mtx:       new(sync.RWMutex),
 	}
 }
 
 // AddRow adds a new row to the table
 func (t *Table) AddRow(data ...interface{}) *Table {
+	t.mtx.Lock()
+	defer t.mtx.Unlock()
 	r := NewRow(data...)
 	t.Rows = append(t.Rows, r)
 	return t
@@ -44,6 +50,9 @@ func (t *Table) AddRow(data ...interface{}) *Table {
 
 // String returns the string value of table
 func (t *Table) String() string {
+	t.mtx.RLock()
+	defer t.mtx.RUnlock()
+
 	if len(t.Rows) == 0 {
 		return ""
 	}

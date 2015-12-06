@@ -1,6 +1,7 @@
 package uitable
 
 import (
+	"sync"
 	"testing"
 )
 
@@ -41,5 +42,21 @@ func TestRow(t *testing.T) {
 
 	if got != need {
 		t.Fatalf("need: %q | got: %q ", need, got)
+	}
+}
+
+func TestAddRow(t *testing.T) {
+	var wg sync.WaitGroup
+	table := New()
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			table.AddRow("foo")
+		}()
+	}
+	wg.Wait()
+	if len(table.Rows) != 100 {
+		t.Fatal("want", 100, "got", len(table.Rows))
 	}
 }
