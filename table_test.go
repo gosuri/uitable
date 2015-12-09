@@ -33,8 +33,8 @@ func TestRow(t *testing.T) {
 	row := &Row{
 		Separator: "\t",
 		Cells: []*Cell{
-			&Cell{Data: "foo", Width: 3, Wrap: true},
-			&Cell{Data: "bar baz", Width: 3, Wrap: true},
+			{Data: "foo", Width: 3, Wrap: true},
+			{Data: "bar baz", Width: 3, Wrap: true},
 		},
 	}
 	got := row.String()
