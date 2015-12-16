@@ -48,6 +48,11 @@ func (t *Table) AddRow(data ...interface{}) *Table {
 	return t
 }
 
+// Bytes returns the []byte value of table
+func (t *Table) Bytes() []byte {
+	return []byte(t.String())
+}
+
 // String returns the string value of table
 func (t *Table) String() string {
 	t.mtx.RLock()
