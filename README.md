@@ -1,6 +1,6 @@
 # uitable [![GoDoc](https://godoc.org/github.com/gosuri/uitable?status.svg)](https://godoc.org/github.com/gosuri/uitable) [![Build Status](https://travis-ci.org/gosuri/uitable.svg?branch=master)](https://travis-ci.org/gosuri/uitable)
 
-uitable is a go library for representing data as tables for terminal applications. It provides primitives for sizing and wrapping columns to improve redability.
+uitable is a go library for representing data as tables for terminal applications. It provides primitives for sizing and wrapping columns to improve readability.
 
 ## Example Usage
 
