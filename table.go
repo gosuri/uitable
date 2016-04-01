@@ -28,14 +28,16 @@ type Table struct {
 	// Separator is the seperator for columns in the table. Default is "\t"
 	Separator string
 
-	mtx *sync.RWMutex
+	mtx        *sync.RWMutex
+	rightAlign map[int]bool
 }
 
 // New returns a new Table with default values
 func New() *Table {
 	return &Table{
-		Separator: Separator,
-		mtx:       new(sync.RWMutex),
+		Separator:  Separator,
+		mtx:        new(sync.RWMutex),
+		rightAlign: map[int]bool{},
 	}
 }
 
@@ -51,6 +53,12 @@ func (t *Table) AddRow(data ...interface{}) *Table {
 // Bytes returns the []byte value of table
 func (t *Table) Bytes() []byte {
 	return []byte(t.String())
+}
+
+func (t *Table) RightAlign(col int) {
+	t.mtx.Lock()
+	t.rightAlign[col] = true
+	t.mtx.Unlock()
 }
 
 // String returns the string value of table
@@ -87,6 +95,7 @@ func (t *Table) String() string {
 		for i, cell := range row.Cells {
 			cell.Width = colwidths[i]
 			cell.Wrap = t.Wrap
+			cell.RightAlign = t.rightAlign[i]
 		}
 		lines = append(lines, row.String())
 	}
@@ -158,6 +167,9 @@ type Cell struct {
 	// Wrap when true wraps the contents of the cell when the lenght exceeds the width
 	Wrap bool
 
+	// RightAlign when true aligns contents to the right
+	RightAlign bool
+
 	// Data is the cell data
 	Data interface{}
 }
@@ -180,11 +192,12 @@ func (c *Cell) String() string {
 		return strutil.PadLeft(" ", int(c.Width), ' ')
 	}
 	s := fmt.Sprintf("%v", c.Data)
-	switch {
-	case c.Width > 0 && c.Wrap:
-		return wordwrap.WrapString(s, c.Width)
-	case c.Width > 0:
-		return strutil.Resize(s, c.Width)
+	if c.Width > 0 {
+		if c.Wrap && uint(len(s)) > c.Width {
+			return wordwrap.WrapString(s, c.Width)
+		} else {
+			return strutil.Resize(s, c.Width, c.RightAlign)
+		}
 	}
 	return s
 }

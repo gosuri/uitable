@@ -45,6 +45,25 @@ func TestRow(t *testing.T) {
 	}
 }
 
+func TestAlign(t *testing.T) {
+	table := New()
+	table.AddRow("foo", "bar baz")
+	table.Rows = []*Row{{
+		Separator: "\t",
+		Cells: []*Cell{
+			{Data: "foo", Width: 5, Wrap: true},
+			{Data: "bar baz", Width: 10, Wrap: true},
+		},
+	}}
+	table.RightAlign(1)
+	got := table.String()
+	need := "foo  \t   bar baz"
+
+	if got != need {
+		t.Fatalf("need: %q | got: %q ", need, got)
+	}
+}
+
 func TestAddRow(t *testing.T) {
 	var wg sync.WaitGroup
 	table := New()

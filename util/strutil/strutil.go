@@ -35,14 +35,18 @@ func PadLeft(str string, length int, pad byte) string {
 
 // Resize resizes the string with the given length. It ellipses with '...' when the string's length exceeds
 // the desired length or pads spaces to the right of the string when length is smaller than desired
-func Resize(s string, length uint) string {
+func Resize(s string, length uint, rightAlign bool) string {
 	slen := runewidth.StringWidth(s)
 	n := int(length)
 	if slen == n {
 		return s
 	}
 	// Pads only when length of the string smaller than len needed
-	s = PadRight(s, n, ' ')
+	if rightAlign {
+		s = PadLeft(s, n, ' ')
+	} else {
+		s = PadRight(s, n, ' ')
+	}
 	if slen > n {
 		rs := []rune(s)
 		var buf bytes.Buffer
