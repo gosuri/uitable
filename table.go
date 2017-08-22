@@ -76,6 +76,7 @@ func (t *Table) Bytes() []byte {
 	return []byte(t.String())
 }
 
+// RightAlign sets the column at index col to be right aligned
 func (t *Table) RightAlign(col int) {
 	t.mtx.Lock()
 	t.rightAlign[col] = true
