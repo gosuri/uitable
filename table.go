@@ -11,8 +11,24 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-// Separator is the default column seperator
-var Separator = "\t"
+// CellFormatter takes x and y cell coordinates and returns a function
+// used to format the content.
+type CellFormatter func(x, y int) Formatter
+
+// Formatter formats the content of a cell. The signature
+// is that of fmt.Sprint which is used as default.
+type Formatter func(s ...interface{}) string
+
+var (
+	// Separator is the default column seperator
+	Separator = "\t"
+
+	// DefaultFormatter is the default cell content formatter
+	DefaultFormatter = fmt.Sprint
+
+	// DefaultCellFormatter is the default cell formatting function
+	DefaultCellFormatter = func(x, y int) Formatter { return DefaultFormatter }
+)
 
 // Table represents a decorator that renders the data in formatted in a table
 type Table struct {
@@ -28,6 +44,9 @@ type Table struct {
 	// Separator is the seperator for columns in the table. Default is "\t"
 	Separator string
 
+	// CellFormatter is the function that selects formatting functions for each cell
+	CellFormatter CellFormatter
+
 	mtx        *sync.RWMutex
 	rightAlign map[int]bool
 }
@@ -35,9 +54,10 @@ type Table struct {
 // New returns a new Table with default values
 func New() *Table {
 	return &Table{
-		Separator:  Separator,
-		mtx:        new(sync.RWMutex),
-		rightAlign: map[int]bool{},
+		Separator:     Separator,
+		CellFormatter: DefaultCellFormatter,
+		mtx:           new(sync.RWMutex),
+		rightAlign:    map[int]bool{},
 	}
 }
 
@@ -47,6 +67,7 @@ func (t *Table) AddRow(data ...interface{}) *Table {
 	defer t.mtx.Unlock()
 	r := NewRow(data...)
 	t.Rows = append(t.Rows, r)
+	r.setCellFormatter(len(t.Rows)-1, t.CellFormatter)
 	return t
 }
 
@@ -135,7 +156,7 @@ func (r *Row) String() string {
 	for x := 0; x < lc; x++ {
 		cells[x] = make([]*Cell, len(r.Cells))
 		for y := 0; y < len(r.Cells); y++ {
-			cells[x][y] = &Cell{Width: r.Cells[y].Width}
+			cells[x][y] = &Cell{Width: r.Cells[y].Width, Formatter: r.Cells[y].Formatter}
 		}
 	}
 
@@ -152,11 +173,18 @@ func (r *Row) String() string {
 	for x := range lines {
 		line := make([]string, len(cells[x]))
 		for y := range cells[x] {
-			line[y] = cells[x][y].String()
+			c := cells[x][y]
+			line[y] = c.Formatter(c.String())
 		}
 		lines[x] = strutil.Join(line, r.Separator)
 	}
 	return strutil.Join(lines, "\n")
+}
+
+func (r *Row) setCellFormatter(y int, cellFormatter CellFormatter) {
+	for x, c := range r.Cells {
+		c.Formatter = cellFormatter(x, y)
+	}
 }
 
 // Cell represents a column in a row
@@ -172,6 +200,8 @@ type Cell struct {
 
 	// Data is the cell data
 	Data interface{}
+
+	Formatter Formatter
 }
 
 // LineWidth returns the max width of all the lines in a cell
@@ -195,9 +225,8 @@ func (c *Cell) String() string {
 	if c.Width > 0 {
 		if c.Wrap && uint(len(s)) > c.Width {
 			return wordwrap.WrapString(s, c.Width)
-		} else {
-			return strutil.Resize(s, c.Width, c.RightAlign)
 		}
+		return strutil.Resize(s, c.Width, c.RightAlign)
 	}
 	return s
 }
