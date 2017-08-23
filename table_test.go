@@ -29,6 +29,18 @@ func TestCell(t *testing.T) {
 	}
 }
 
+func TestFormatCell(t *testing.T) {
+	c := &Cell{
+		Data:      "foo bar",
+		Formatter: formatter,
+	}
+
+	got := c.Formatter(c.String())
+	if got != ">>foo bar<<" {
+		t.Fatal("need", ">>foo bar<<", "got", got)
+	}
+}
+
 func TestRow(t *testing.T) {
 	row := &Row{
 		Separator: "\t",
@@ -39,6 +51,22 @@ func TestRow(t *testing.T) {
 	}
 	got := row.String()
 	need := "foo\tbar\n   \tbaz"
+
+	if got != need {
+		t.Fatalf("need: %q | got: %q ", need, got)
+	}
+}
+
+func TestFormatRow(t *testing.T) {
+	row := &Row{
+		Separator: "\t",
+		Cells: []*Cell{
+			{Data: "foo", Width: 3, Wrap: true, Formatter: formatter},
+			{Data: "bar baz", Width: 3, Wrap: true, Formatter: formatter},
+		},
+	}
+	got := row.String()
+	need := ">>foo<<\t>>bar<<\n>>   <<\t>>baz<<"
 
 	if got != need {
 		t.Fatalf("need: %q | got: %q ", need, got)
@@ -78,4 +106,8 @@ func TestAddRow(t *testing.T) {
 	if len(table.Rows) != 100 {
 		t.Fatal("want", 100, "got", len(table.Rows))
 	}
+}
+
+func formatter(s ...interface{}) string {
+	return ">>" + DefaultFormatter(s[0]) + "<<"
 }
