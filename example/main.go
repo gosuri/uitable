@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/gosuri/uitable"
+	"github.com/fatih/color"
+	"github.com/svenax/uitable"
 )
 
 type hacker struct {
@@ -15,8 +16,22 @@ var hackers = []hacker{
 	{"Alan Turing", "June 23, 1912", "Alan was a British pioneering computer scientist, mathematician, logician, cryptanalyst and theoretical biologist"},
 }
 
+var (
+	headerFormat = color.New(color.FgBlack, color.Bold).SprintFunc()
+	nameFormat   = color.New(color.FgGreen).SprintFunc()
+)
+
 func main() {
 	table := uitable.New()
+	table.CellFormatter = func(x, y int) uitable.Formatter {
+		if y == 0 {
+			return headerFormat
+		}
+		if x == 0 {
+			return nameFormat
+		}
+		return uitable.DefaultFormatter
+	}
 	table.MaxColWidth = 50
 
 	fmt.Println("==> List")
@@ -28,6 +43,15 @@ func main() {
 
 	fmt.Print("\n==> Details\n")
 	table = uitable.New()
+	table.CellFormatter = func(x, y int) uitable.Formatter {
+		if x == 0 {
+			return headerFormat
+		}
+		if x == 1 && y%4 == 0 {
+			return nameFormat
+		}
+		return uitable.DefaultFormatter
+	}
 	table.MaxColWidth = 80
 	table.Wrap = true
 	for _, hacker := range hackers {
