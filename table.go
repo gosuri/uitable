@@ -6,9 +6,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/fatih/color"
 	"github.com/gosuri/uitable/util/strutil"
 	"github.com/gosuri/uitable/util/wordwrap"
-	"github.com/mattn/go-runewidth"
 )
 
 // Separator is the default column seperator
@@ -178,7 +178,7 @@ type Cell struct {
 func (c *Cell) LineWidth() uint {
 	width := 0
 	for _, s := range strings.Split(c.String(), "\n") {
-		w := runewidth.StringWidth(s)
+		w := strutil.StringWidth(s)
 		if w > width {
 			width = w
 		}
@@ -191,7 +191,9 @@ func (c *Cell) String() string {
 	if c.Data == nil {
 		return strutil.PadLeft(" ", int(c.Width), ' ')
 	}
-	s := fmt.Sprintf("%v", c.Data)
+	col := color.New(color.FgBlack)
+	col.DisableColor()
+	s := fmt.Sprintf("%v", col.Sprint(c.Data))
 	if c.Width > 0 {
 		if c.Wrap && uint(len(s)) > c.Width {
 			return wordwrap.WrapString(s, c.Width)
