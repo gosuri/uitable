@@ -156,7 +156,7 @@ func (r *Row) String() string {
 		}
 		lines[x] = strutil.Join(line, r.Separator)
 	}
-	return strutil.Join(lines, "\n")
+	return strings.Join(lines, "\n")
 }
 
 // Cell represents a column in a row
