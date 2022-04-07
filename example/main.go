@@ -32,9 +32,9 @@ func main() {
 	table.MaxColWidth = 80
 	table.Wrap = true
 	for _, hacker := range hackers {
-		table.AddRow("Name:", hacker.Name)
-		table.AddRow("Birthday:", hacker.Birthday)
-		table.AddRow("Bio:", hacker.Bio)
+		table.AddRow("1. Name:", hacker.Name)
+		table.AddRow("2. Birthday:", hacker.Birthday)
+		table.AddRow("3. Bio:", hacker.Bio)
 		table.AddRow("") // blank
 	}
 	fmt.Println(table)
@@ -44,9 +44,9 @@ func main() {
 	table.MaxColWidth = 80
 	table.Wrap = true
 	for _, hacker := range hackers {
-		table.AddRow(color.RedString("Name:"), color.WhiteString(hacker.Name))
-		table.AddRow(color.BlueString("Birthday:"), hacker.Birthday)
-		table.AddRow(color.GreenString("Bio:"), hacker.Bio)
+		table.AddRow(color.RedString("1. Name:"), color.WhiteString(hacker.Name))
+		table.AddRow(color.BlueString("2. Birthday:"), hacker.Birthday)
+		table.AddRow(color.GreenString("3. Bio:"), hacker.Bio)
 		table.AddRow("") // blank
 	}
 	fmt.Println(table)
