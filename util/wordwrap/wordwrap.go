@@ -23,6 +23,7 @@ func WrapString(s string, lim uint) string {
 	var wordBuf, spaceBuf bytes.Buffer
 	var wordWidth, spaceWidth int
 
+	lim = lim + uint(len(s)) - uint(strutil.StringWidth(s))
 	for _, char := range s {
 		if char == '\n' {
 			if wordBuf.Len() == 0 {
