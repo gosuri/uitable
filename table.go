@@ -6,7 +6,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/fatih/color"
 	"github.com/gosuri/uitable/util/strutil"
 	"github.com/gosuri/uitable/util/wordwrap"
 )
@@ -191,11 +190,9 @@ func (c *Cell) String() string {
 	if c.Data == nil {
 		return strutil.PadLeft(" ", int(c.Width), ' ')
 	}
-	col := color.New(color.FgBlack)
-	col.DisableColor()
-	s := fmt.Sprintf("%v", col.Sprint(c.Data))
+	s := fmt.Sprint(c.Data)
 	if c.Width > 0 {
-		if c.Wrap && uint(len(s)) > c.Width {
+		if c.Wrap && uint(strutil.StringWidth(s)) > c.Width {
 			return wordwrap.WrapString(s, c.Width)
 		} else {
 			return strutil.Resize(s, c.Width, c.RightAlign)
