@@ -55,19 +55,15 @@ func (t *Table) Bytes() []byte {
 	return []byte(t.String())
 }
 
-func (t *Table) RightAlign(col int) {
-	t.mtx.Lock()
-	t.rightAlign[col] = true
-	t.mtx.Unlock()
-}
-
-// String returns the string value of table
-func (t *Table) String() string {
+// Lines returns the table's rows as a slice of strings
+func (t *Table) Lines() []string {
 	t.mtx.RLock()
 	defer t.mtx.RUnlock()
 
+	lines := []string{}
+
 	if len(t.Rows) == 0 {
-		return ""
+		return lines
 	}
 
 	// determine the width for each column (cell in a row)
@@ -89,7 +85,6 @@ func (t *Table) String() string {
 		}
 	}
 
-	var lines []string
 	for _, row := range t.Rows {
 		row.Separator = t.Separator
 		for i, cell := range row.Cells {
@@ -99,7 +94,19 @@ func (t *Table) String() string {
 		}
 		lines = append(lines, row.String())
 	}
-	return strutil.Join(lines, "\n")
+
+	return lines
+}
+
+func (t *Table) RightAlign(col int) {
+	t.mtx.Lock()
+	t.rightAlign[col] = true
+	t.mtx.Unlock()
+}
+
+// String returns the string value of table
+func (t *Table) String() string {
+	return strutil.Join(t.Lines(), "\n")
 }
 
 // Row represents a row in a table
