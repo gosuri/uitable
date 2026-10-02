@@ -195,7 +195,7 @@ func (c *Cell) String() string {
 	col.DisableColor()
 	s := fmt.Sprintf("%v", col.Sprint(c.Data))
 	if c.Width > 0 {
-		if c.Wrap && uint(len(s)) > c.Width {
+		if c.Wrap && uint(strutil.StringWidth(s)) > c.Width {
 			return wordwrap.WrapString(s, c.Width)
 		} else {
 			return strutil.Resize(s, c.Width, c.RightAlign)

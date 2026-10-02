@@ -1,8 +1,12 @@
 package uitable
 
 import (
+	"strings"
 	"sync"
 	"testing"
+
+	"github.com/fatih/color"
+	"github.com/gosuri/uitable/util/strutil"
 )
 
 func TestCell(t *testing.T) {
@@ -77,5 +81,45 @@ func TestAddRow(t *testing.T) {
 	wg.Wait()
 	if len(table.Rows) != 100 {
 		t.Fatal("want", 100, "got", len(table.Rows))
+	}
+}
+
+func TestCellColorWrap(t *testing.T) {
+	c := &Cell{
+		Data:  color.RedString("foo bar"),
+		Width: 10,
+		Wrap:  true,
+	}
+
+	got := c.String()
+	need := color.RedString("foo bar") + "   "
+	if got != need {
+		t.Fatalf("need %q, got %q", need, got)
+	}
+	if w := strutil.StringWidth(got); w != 10 {
+		t.Fatalf("need visible width 10, got %d", w)
+	}
+
+	table := New()
+	table.Wrap = true
+	table.AddRow(color.RedString("1. Name:"), "Ada Lovelace")
+	table.AddRow(color.BlueString("2. Birthday:"), "December 10, 1815")
+	tgot := table.String()
+	tneed := color.RedString("1. Name:") + "    \tAda Lovelace     \n" + color.BlueString("2. Birthday:") + "\tDecember 10, 1815"
+	if tgot != tneed {
+		t.Fatalf("need:\n%q\ngot:\n%q", tneed, tgot)
+	}
+
+	c2 := &Cell{
+		Data:  color.RedString("foo bar"),
+		Width: 5,
+		Wrap:  true,
+	}
+	got2 := c2.String()
+	if c2.LineWidth() != 3 {
+		t.Fatalf("need line width 3, got %d", c2.LineWidth())
+	}
+	if lines := strings.Split(got2, "\n"); len(lines) != 2 {
+		t.Fatalf("need 2 lines, got %d", len(lines))
 	}
 }
