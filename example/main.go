@@ -3,9 +3,21 @@ package main
 import (
 	"fmt"
 
-	"github.com/fatih/color"
 	"github.com/gosuri/uitable"
 )
+
+const (
+	ansiReset = "\033[0m"
+	ansiRed   = "\033[31m"
+	ansiGreen = "\033[32m"
+	ansiBlue  = "\033[34m"
+	ansiWhite = "\033[37m"
+)
+
+func red(s string) string   { return ansiRed + s + ansiReset }
+func green(s string) string { return ansiGreen + s + ansiReset }
+func blue(s string) string  { return ansiBlue + s + ansiReset }
+func white(s string) string { return ansiWhite + s + ansiReset }
 
 type hacker struct {
 	Name, Birthday, Bio string
@@ -44,9 +56,9 @@ func main() {
 	table.MaxColWidth = 80
 	table.Wrap = true
 	for _, hacker := range hackers {
-		table.AddRow(color.RedString("Name:"), color.WhiteString(hacker.Name))
-		table.AddRow(color.BlueString("Birthday:"), hacker.Birthday)
-		table.AddRow(color.GreenString("Bio:"), hacker.Bio)
+		table.AddRow(red("Name:"), white(hacker.Name))
+		table.AddRow(blue("Birthday:"), hacker.Birthday)
+		table.AddRow(green("Bio:"), hacker.Bio)
 		table.AddRow("") // blank
 	}
 	fmt.Println(table)

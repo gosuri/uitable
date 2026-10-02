@@ -79,3 +79,27 @@ func TestAddRow(t *testing.T) {
 		t.Fatal("want", 100, "got", len(table.Rows))
 	}
 }
+
+func TestCellColor(t *testing.T) {
+	colored := "\033[31mfoo\033[0m"
+	c := &Cell{
+		Data: colored,
+	}
+	got := c.String()
+	if got != colored {
+		t.Fatalf("need %q, got %q", colored, got)
+	}
+	if c.LineWidth() != 3 {
+		t.Fatalf("need line width 3, got %d", c.LineWidth())
+	}
+
+	c.Width = 5
+	got = c.String()
+	need := colored + "  "
+	if got != need {
+		t.Fatalf("need %q, got %q", need, got)
+	}
+	if c.LineWidth() != 5 {
+		t.Fatalf("need line width 5, got %d", c.LineWidth())
+	}
+}
